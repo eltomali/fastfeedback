@@ -6,33 +6,33 @@ import { FastFeedBackIcon } from 'public/icons';
 const Home = () => {
   const auth = useAuth();
   return (
-    <div className="container">
+    <Flex
+      as="main"
+      direction="column"
+      align="center"
+      justify="center"
+      h="100vh"
+    >
       <Head>
         <title>Fast Feedback</title>
       </Head>
 
-      <Flex
-        as="main"
-        direction="column"
-        align="center"
-        justify="center"
-        h="100vh"
-      >
-        <Heading>Fast Feedback</Heading>
-        <FastFeedBackIcon color="black.500" boxSize="64px" />
-        {/* <Text>
+      <Heading>Fast Feedback</Heading>
+      <FastFeedBackIcon color="black.500" boxSize="64px" />
+      {/* <Text>
           Current user: <Code>{auth.user ? auth.user.name : 'None'}</Code>
         </Text> */}
 
-        {auth.user ? (
-          <Button onClick={(e) => auth.signout()}>Sign Out</Button>
-        ) : (
-          <Button mt={4} size="sm" onClick={(e) => auth.signinWithGitHub()}>
-            Sign In
-          </Button>
-        )}
-      </Flex>
-    </div>
+      {auth.user ? (
+        <Button as="a" href="/dashboard">
+          View Dashboard
+        </Button>
+      ) : (
+        <Button mt={4} size="sm" onClick={(e) => auth.signinWithGitHub()}>
+          Sign In
+        </Button>
+      )}
+    </Flex>
   );
 };
 

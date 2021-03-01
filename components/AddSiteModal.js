@@ -1,3 +1,4 @@
+import { useAuth } from '@/lib/auth';
 import { createSite } from '@/lib/db';
 import {
   Button,
@@ -11,21 +12,63 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { mutate } from 'swr';
 
-const AddSiteModal = () => {
+const AddSiteModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = useRef();
-  const { handleSubmit, setValue, register } = useForm();
-  const onCreateSite = (values) => createSite(values);
+  const toast = useToast();
+  const auth = useAuth();
+  const { handleSubmit, register } = useForm();
 
+  const onCreateSite = ({ name, url }) => {
+    const newSite = {
+      authorId: auth.user.uid,
+      createdAt: new Date().toISOString(),
+      name,
+      url
+    };
+    // create the new site
+    createSite(newSite);
+    // show toast when site is created
+    toast({
+      title: 'Success.',
+      description: "We've added your site.",
+      status: 'success',
+      duration: 5000,
+      isClosable: true
+    });
+    // fetch the info from the old sites and locally mutate it with the new site
+    //mutate('api/sites', { sites: [...data.sites, newSite] });
+    mutate(
+      '/api/sites',
+      async (data) => {
+        return { sites: [...data.sites, newSite] };
+      },
+      false
+    );
+    // close the model
+    onClose();
+  };
   return (
     <>
-      <Button onClick={onOpen} maxW="200px" fontWeight="medium">
-        Add your first site
+      <Button
+        backgroundColor="gray.900"
+        color="white"
+        fontWeight="medium"
+        _hover={{ bg: 'gray.700' }}
+        _active={{
+          bg: 'gray.800',
+          transform: 'scale(0.95)'
+        }}
+        onClick={onOpen}
+      >
+        {children}
       </Button>
 
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
@@ -39,7 +82,7 @@ const AddSiteModal = () => {
               <Input
                 ref={initialRef}
                 placeholder="My Site"
-                name="site"
+                name="name"
                 ref={register({ required: true, maxLength: 20 })}
               />
             </FormControl>

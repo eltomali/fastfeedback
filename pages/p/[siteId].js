@@ -8,7 +8,7 @@ import { useRef, useState } from 'react';
 
 export async function getStaticProps(context) {
   const siteId = context.params.siteId;
-  const feedback = await getAllFeedback(siteId);
+  const { feedback } = await getAllFeedback(siteId);
   return {
     props: {
       initialFeedback: feedback
@@ -16,7 +16,7 @@ export async function getStaticProps(context) {
   };
 }
 export async function getStaticPaths() {
-  const sites = await getAllSites();
+  const { sites } = await getAllSites();
   const paths = sites.map((site) => ({
     params: {
       siteId: site.id.toString()

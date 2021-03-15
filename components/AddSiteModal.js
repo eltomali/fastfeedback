@@ -46,7 +46,7 @@ const AddSiteModal = ({ children }) => {
     // fetch the info from the old sites and locally mutate it with the new site
     //mutate('api/sites', { sites: [...data.sites, newSite] });
     mutate(
-      '/api/sites',
+      ['/api/sites', auth.user.token],
       async (data) => {
         return { sites: [...data.sites, newSite] };
       },
